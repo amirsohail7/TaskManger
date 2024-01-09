@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "task_#{task.id}" do %>
-  <div class="w-full mb-4 transition-transform transform hover:scale-105">
-    <div class="flex items-center justify-between bg-gray-100 border p-4 rounded shadow h-full">
+  <div class="w-full mb-4 transition-transform transform hover:scale-105" >
+    <div class="flex items-center justify-between bg-gray-100 border p-4 rounded shadow h-full" data-controller="task-status-toggle" data-task-id="<%= task.id %>" data-action="click->task-status-toggle#toggleStatus">
       <div class="mb-4">
         <%= link_to task_path(task), class: 'no-underline' do %>
           <h3 class="text-lg text-sky-600 font-semibold"><%= task.name %></h3>
