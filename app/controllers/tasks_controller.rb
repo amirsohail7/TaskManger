@@ -49,6 +49,12 @@ class TasksController < ApplicationController
       end
     end
   end
+
+  def toggle_status
+    @task = Task.find(params[:id])
+    @task.update(completed: !@task.completed)
+    render json: { completed: @task.completed }
+  end
   
 
   private
