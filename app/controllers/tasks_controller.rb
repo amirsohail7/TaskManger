@@ -10,10 +10,19 @@ class TasksController < ApplicationController
 
   def create
     @task = Task.new(task_params)
-    if @task.save
-      redirect_to tasks_path(@task), notice: 'Task was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @task.save
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.append(
+            :tasks,
+            partial: 'tasks/task',
+            locals: { task: @task }
+          )
+        end
+      else
+        format.html { render :new }
+      end
     end
   end
 
@@ -22,17 +31,25 @@ class TasksController < ApplicationController
   def edit; end
 
   def update
-    if @task.update(task_params)
-      redirect_to tasks_path, notice: 'Task was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @task.update(task_params)
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@task, partial: "tasks/task", locals: { task: @task }) }
+      else
+        format.html { render :edit }
+      end
     end
   end
 
   def destroy
     @task.destroy
-    redirect_to tasks_path, notice: 'Task was successfully destroyed.'
+  
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove(@task)
+      end
+    end
   end
+  
 
   private
 
@@ -43,6 +60,7 @@ class TasksController < ApplicationController
 
   def load_tasks
     @tasks = Task.all
+    @task = Task.new
   end
 
   def task_params
